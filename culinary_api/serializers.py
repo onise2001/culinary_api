@@ -40,9 +40,14 @@ class RecipeSerializer(serializers.ModelSerializer):
     def update(self,instance, validated_data):
         print(instance.ingredients)
         instance.ingredients.clear()
+
+        print(validated_data)
+
+        new_ingredients = validated_data.pop('ingredients')
+        instance = super(RecipeSerializer, self).update(instance, validated_data)
         
 
-        for ingredient in validated_data['ingredients']:
+        for ingredient in new_ingredients:
             old_ingredient = Ingredient.objects.get(pk=ingredient['id'])
             old_ingredient.name = ingredient['name']
             old_ingredient.amount = ingredient['amount']
