@@ -2,18 +2,22 @@ from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from .models import Recipe, Ingredient
 from .serializers import RecipeSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from .permissions import CanDelete, CanEdit
 # Create your views here.
 
 
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def create(self, request, *args,**kwargs):
+        for index,ingredient in enumerate(request.data['ingredients']):
+               new_ing = Ingredient.objects.create(**ingredient)             
+               request.data['ingredients'][index]['id'] = new_ing.id                                                                           
+
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             #print(serializer.validated_data)
@@ -25,11 +29,21 @@ class RecipeViewSet(ModelViewSet):
     
 
     def update(self, request, *args, **kwargs ):
-        for ingredient in request.data['ingredients']:
+        item_ids = []
+        for index,ingredient in enumerate(request.data['ingredients']):
             if 'id' not in ingredient.keys():
-                ingredient = Ingredient.objects.create(**ingredient)
+                new_ing = Ingredient.objects.create(**ingredient)
+                request.data['ingredients'][index]['id'] = new_ing.id
+            else:
+                old_ing = Ingredient(pk=ingredient['id'], **ingredient)
+                old_ing.save()
+            item_ids.append(ingredient['id'])    
             
         instance = self.get_object()
+
+        for ingredient in instance.ingredients.all():
+            if ingredient.id not in item_ids: 
+                Ingredient.objects.filter(pk=ingredient.id).delete()
 
         serializer = self.serializer_class(instance, data=request.data, partial=True)
         if serializer.is_valid():
@@ -37,7 +51,24 @@ class RecipeViewSet(ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(data=serializer.data, status=status.HTTP_200_OK, headers=headers)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
     
+    
+    def get_permissions(self):
+        if self.action in ["list", "retrieve",]:
+            self.permission_classes = [IsAuthenticatedOrReadOnly]
+        elif self.action == "create":
+            self.permission_classes = [IsAuthenticated]
+
+        elif self.action == "destroy":
+            self.permission_classes = [CanDelete]
+        elif self.action in ["update", "partial_update"]:
+            self.permission_classes = [CanEdit]
+
+        return [permission() for permission in self.permission_classes]    
             
+    
+
+  
 
