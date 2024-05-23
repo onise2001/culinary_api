@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from rest_framework.generics import ListAPIView 
 from rest_framework.viewsets import ModelViewSet
 from .models import Recipe, Ingredient
 from .serializers import RecipeSerializer
@@ -6,12 +6,20 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from rest_framework.response import Response
 from rest_framework import status
 from .permissions import CanDelete, CanEdit
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import SAFE_METHODS
+from collections import Counter
+from rest_framework.renderers import JSONRenderer
+from .filters import RecommendationFilter
 # Create your views here.
 
 
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['name', 'description']
 
     def create(self, request, *args,**kwargs):
         for index,ingredient in enumerate(request.data['ingredients']):
@@ -56,7 +64,8 @@ class RecipeViewSet(ModelViewSet):
     
     
     def get_permissions(self):
-        if self.action in ["list", "retrieve",]:
+
+        if self.action in SAFE_METHODS:
             self.permission_classes = [IsAuthenticatedOrReadOnly]
         elif self.action == "create":
             self.permission_classes = [IsAuthenticated]
@@ -71,4 +80,10 @@ class RecipeViewSet(ModelViewSet):
     
 
   
+
+class RecommendationViewSet(ListAPIView):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    filter_backends = [RecommendationFilter]
+   
 
