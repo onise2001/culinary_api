@@ -43,32 +43,42 @@ See swagger documentaion for information about api endpoints.
 # OR
 
 ## Functionality
-- **### List recipes:** By sending a GET request to this api endpoint, ```/recipe/```, you will get an array of all recipes currently in the database.
+- **List recipes:** By sending a GET request to this api endpoint, ```/recipe/```, you will get an array of all recipes currently in the database.
 
-- **### View recipe:** By sending a GET request to this api endpoint, ```/recipe/{id}```, you will get an instance of the recipe with that id.
+- **View recipe:** By sending a GET request to this api endpoint, ```/recipe/{id}```, you will get an instance of the recipe with that id.
 
-- **### Create recipe:** By sending a POST request to this api endpoint, ```/recipe/``` , with correct request body, a new recipe will be created and added to the database if you are authenticated.
+- **Create recipe:** By sending a POST request to this api endpoint, ```/recipe/``` , with correct request body, a new recipe will be created and added to the database if you are authenticated.
 
-- **### Edit recipe:** By sending a PUT request to this api endpoint, ```/recipe/{id}``` , with correct request body, a recipe with that id will be edited with the information you provided in the request body if you have the permission to do so.
+- **Edit recipe:** By sending a PUT request to this api endpoint, ```/recipe/{id}``` , with correct request body, a recipe with that id will be edited with the information you provided in the request body if you have the permission to do so.
 
-- **### Delete recipe:** By sending a DELETE request to this api endpoint, ```/recipe/{id}``` ,  a recipe with that id will be deleted from the database if you have the permission to do so.
+- **Delete recipe:** By sending a DELETE request to this api endpoint, ```/recipe/{id}``` ,  a recipe with that id will be deleted from the database if you have the permission to do so.
 
-- **### Rate recipe:** By sending a PATCH request to this api endpoint, ```/rate/{id}``` , with correct request body, a recipe with that id will get rated by you if you are authenticated.
+- **Rate recipe:** By sending a PATCH request to this api endpoint, ```/rate/{id}``` , with correct request body, a recipe with that id will get rated by you if you are authenticated.
 
+- **Recommendations:** By sending a GET request to this api endpoint, ```/rec``` , you will get recommendations about recipes based on recipes you have uploaded if you are authenticated.
 
-- **### Recommendations:** By sending a GET request to this api endpoint, ```/rec``` , you will get recommendations about recipes based on recipes you have uploaded if you are authenticated.
+- **Registration
 
 
 
 ## Authentication
 This project uses django's built-in Token Authentication for registration and login purposes. Users can register as Chefs or Regular users.
-- **Regular Users**
+
+- **Registration:** By sending a POST request to this api endpoint, ```/auth/signup/``` , with correct request body, a new Regular User will be created and added to the database.
+
+- **Registration as Chef:** By sending a POST request to this api endpoint, ```/auth/chef/``` , with correct request body, a new Chef User will be created and added to the database.
+
+- **Login:** By sending a POST request to this api endpoint, ```/auth/login/``` , with correct request body, you will get an Authorization Token.
+
+#### Regular Users have following fields:
 - Username
 - Email
 - Password
 
-- **Chef**
-- Same as regular users plus:
+#### Chef's have all regular user fields, plus:
 - Background
 - Speciality
+
+
+
 
