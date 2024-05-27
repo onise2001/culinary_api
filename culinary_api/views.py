@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView 
+from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.viewsets import ModelViewSet
 from .models import Recipe, Ingredient
 from .serializers import RecipeSerializer
@@ -6,13 +6,15 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from rest_framework.response import Response
 from rest_framework import status
 from .permissions import CanDelete, CanEdit
-from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import SAFE_METHODS
 from collections import Counter
 from rest_framework.renderers import JSONRenderer
 from .filters import RecommendationFilter
+from decimal import Decimal
 # Create your views here.
+
+
 
 
 class RecipeViewSet(ModelViewSet):
@@ -84,6 +86,28 @@ class RecipeViewSet(ModelViewSet):
 class RecommendationViewSet(ListAPIView):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+    permission_classes = [IsAuthenticated]
     filter_backends = [RecommendationFilter]
    
 
+class RateRecipeViewSet(UpdateAPIView):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        rating = Decimal(request.data.get('rating'))
+
+        instance.rated_by += 1
+        instance.all_rating +=  rating
+        instance.average_rating = instance.all_rating / instance.rated_by
+        serializer = RecipeSerializer(instance,data={'recipe': instance},partial=True )
+        if serializer.is_valid():
+            instance.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
