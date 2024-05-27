@@ -17,6 +17,11 @@ git clone https://github.com/onise2001/culinary_api.git
 ```
 cd culinary_api
 ```
+- Create virtual environment with the following coomand (python3 if on linux):
+```
+python -m venv venv
+```
+
 - Install required modules by running the following command:
 ```
 pip install -r requirements.txt
