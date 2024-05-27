@@ -35,9 +35,16 @@ class RecommendationFilter(filters.BaseFilterBackend):
         return []
 
   
-  
-  
-  
+
+class RecipeNameFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        name = request.query_params.get('name')
+        if name:
+            filtered_queryset = queryset.filter(name__contains=name.capitalize())
+            #print(request.query_params)
+            return filtered_queryset
+        
+        return queryset
   
   
   

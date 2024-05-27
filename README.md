@@ -57,6 +57,10 @@ See swagger documentaion for information about api endpoints.
 
 - **Recommendations:** By sending a GET request to this api endpoint, ```/rec``` , you will get recommendations about recipes based on recipes you have uploaded if you are authenticated.
 
+## Filters
+
+- **Name:** By sending a GET request to this api endpoint, ```/recipe?name={recipe_name}```, you will get an array of all recipes that have name fields that contain the name provided.
+
 
 
 

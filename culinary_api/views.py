@@ -10,7 +10,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import SAFE_METHODS
 from collections import Counter
 from rest_framework.renderers import JSONRenderer
-from .filters import RecommendationFilter
+from .filters import RecommendationFilter, RecipeNameFilter
 from decimal import Decimal
 # Create your views here.
 
@@ -20,8 +20,9 @@ from decimal import Decimal
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['name', 'description']
+    filter_backends = [RecipeNameFilter]
+    #filterset_class = RecipeNameFilter
+    filterset_fields = ['name']
 
     def create(self, request, *args,**kwargs):
         for index,ingredient in enumerate(request.data['ingredients']):
