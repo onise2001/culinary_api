@@ -57,9 +57,13 @@ See swagger documentaion for information about api endpoints.
 
 - **Recommendations:** By sending a GET request to this api endpoint, ```/rec``` , you will get recommendations about recipes based on recipes you have uploaded if you are authenticated.
 
-## Filters
+#### Filters
 
 - **Name:** By sending a GET request to this api endpoint, ```/recipe?name={recipe_name}```, you will get an array of all recipes that have name fields that contain the name provided.
+
+
+
+
 
 
 
@@ -85,3 +89,8 @@ This project uses django's built-in Token Authentication for registration and lo
 
 
 
+## Permissions:
+
+- **CanEdit:** This permission class checsk if the user trying to edit the recipe is the user that created it, if it is the same user then edit of the recipe goes as planned, if not then error message is provided.
+
+- **CanDelete:** This permission class checsk if the user trying to delete the recipe is the user that created it OR if the user is a member of the staff, if it is the user that created the recipe or a staff user then deletion goes as planned, if not then error message is provided.
